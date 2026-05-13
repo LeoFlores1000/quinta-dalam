@@ -1,0 +1,292 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Quinta Dalam | Inicio</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dianacamposrosas/Proyecto-Hotel@main/css/forms.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Tema oscuro o rústico si prefieres, pero lo estilizaremos con tu CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script> <!-- Para que esté en español -->
+</head>
+<body>
+
+    <header class="header">
+        <div class="header__logo">
+            <a href="{% url 'home' %}" style="color: white; font-family: var(--font-heading); font-size: 1.8rem;">Quinta Dalam</a>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li><a href="{% url 'mision' %}"  class="header__nav-link">Misión</a></li>
+                <li><a href="{% url 'vision' %}" class="header__nav-link">Visión</a></li>
+                <li><a href="{% url 'catalogo' %}" class="header__nav-link">Catálogo</a></li>
+                <li><a href="{% url 'contacto' %}" class="header__nav-link">Contacto</a></li> 
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            
+            <div class="hero__video-wrapper">
+                <video class="hero__video" autoplay muted loop playsinline>
+                    <source src="{% static 'img/instalaciones/coeneo.mp4' %}" type="video/mp4">
+                </video>
+            </div>
+            
+            <div class="hero__overlay"></div>
+
+            <div class="hero__content">
+                <h1 class="hero__title">Quinta Dalam</h1>
+                <p class="hero__tagline">Vive la magia de Michoacán</p>
+            </div>
+        </section>
+
+        <section class="booking-bar" aria-label="Búsqueda de disponibilidad">
+            <div class="booking-bar__field">
+                <label for="dateRange" class="booking-bar__label">Estancia (Entrada - Salida)</label>
+                <input type="text" id="dateRange" class="booking-bar__input" placeholder="Selecciona tus fechas" readonly>
+            </div>
+    
+            <div class="booking-bar__field">
+                <label for="guests" class="booking-bar__label">Huéspedes</label>
+                <select id="guests" class="booking-bar__select">
+                    <option value="1">1 Adulto</option>
+                    <option value="2" selected>2 Adultos</option>
+                    <option value="3">3 Adultos</option>
+                    <option value="4">4 Familia</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn--primary" id="btnReservaEfecto">Ver Tarifas</button>
+        </section>
+
+        <section class="section-rooms">
+            <h2 class="section-title">Suites & Habitaciones</h2>
+            <p class="section-subtitle">Descubre el encanto de nuestros pueblos mágicos. Cada rincón está inspirado en la riqueza cultural de nuestra tierra, ofreciendo una experiencia inigualable.</p>
+
+            <div class="carousel">
+                <button class="carousel__btn carousel__btn--prev" aria-label="Anterior">&#10094;</button>
+                
+                <div class="carousel__track" id="roomTrack">
+                    <article class="room-card">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjoHX2nx9RRxHpMMUawe_H4FXe61twtrhPRQ&s" alt="Interior de la Suite Pátzcuaro" class="room-card__img">
+                        <div class="room-card__content">
+                            <h3 class="room-card__title">Suite Pátzcuaro</h3>
+                            <p class="room-card__price">$1,500 / Noche</p>
+                            <p class="room-card__desc">Decoración rústica y elegante, ideal para un descanso profundo y reparador.</p>
+                        </div>
+                    </article>
+
+                    <article class="room-card">
+                        <img src="https://image-tc.galaxy.tf/wijpeg-39q0ohdze5lzfn7q47k4cyd7v/morelia-1920x1080_standard.jpg?width=650&crop=240%2C0%2C1440%2C1080" alt="Dormitorio Morelia con acabados de lujo" class="room-card__img">
+                        <div class="room-card__content">
+                            <h3 class="room-card__title">Dormitorio Morelia</h3>
+                            <p class="room-card__price">$2,200 / Noche</p>
+                            <p class="room-card__desc">El lujo de la época colonial en el centro de Morelia. Muros de piedra y techos altos.</p>
+                        </div>
+                    </article>
+
+                    <article class="room-card">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSabEtZIM3L50Ih2EuI6zrMZ6lEgWvlsg5vgg&s" alt="Cabaña Zirahuén rodeada de naturaleza" class="room-card__img">
+                        <div class="room-card__content">
+                            <h3 class="room-card__title">Cabaña Zirahuén</h3>
+                            <p class="room-card__price">$1,800 / Noche</p>
+                            <p class="room-card__desc">Privacidad total con detalles en madera fina y un ambiente inmersivo en la naturaleza.</p>
+                        </div>
+                    </article>
+
+                     <article class="room-card">
+                        <img src="https://tecolotito.elsiglodetorreon.com.mx/i/2020/12/1378650.jpeg" alt="Habitación Paracho con detalles musicales" class="room-card__img">
+                        <div class="room-card__content">
+                            <h3 class="room-card__title">Habitación Paracho</h3>
+                            <p class="room-card__price">$2,100 / Noche</p>
+                            <p class="room-card__desc">Un espacio dedicado a la música. Acabados en pino con acústica perfecta para descansar.</p>
+                        </div>
+                    </article>
+                </div>
+                
+                <button class="carousel__btn carousel__btn--next" aria-label="Siguiente">&#10095;</button>
+            </div>
+        </section>
+
+
+        <section class="experience">
+            <div class="experience__header">
+                <h2 class="section-title">Experiencias Quinta Dalam</h2>
+                <p class="section-subtitle">Desde una tarde relajante en nuestra alberca hasta el evento de tus sueños en nuestros jardines. Creamos momentos inolvidables en el lugar de los pájaros.</p>
+            </div>
+            
+
+            <div class="experience__grid">
+
+                <div class="experience__item experience__item--large">
+                    <video src="{% static 'img/instalaciones/WhatsApp Video 2026-04-08 at 9.57.13 AM.mp4' %}" autoplay muted loop alt="Detalles de banquetes y decoración" class="experience__img"></video>
+                    <div class="experience__overlay">
+                        <h3 class="experience__caption">Momentos Mágicos</h3>
+                        <p class="experience__sub-caption">Atención al detalle</p>
+                    </div>
+                </div>
+
+                <div class="experience__item">
+                    <img src="{% static 'img/instalaciones/alberca.jpeg' %}" alt="Alberca cristalina del Hotel Quinta Dalam" class="experience__img">
+                    <div class="experience__overlay">
+                        <h3 class="experience__caption">Relajación Total</h3>
+                        <p class="experience__sub-caption">Alberca al aire libre</p>
+                    </div>
+                </div>
+
+                <div class="experience__item">
+                    <img src="{% static 'img/instalaciones/jardín.jpeg' %}" alt="Jardín principal para eventos" class="experience__img">
+                    <div class="experience__overlay">
+                        <h3 class="experience__caption">Eventos Sociales</h3>
+                        <p class="experience__sub-caption">Jardines versátiles</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="experience__cta">
+                <a href="{% url 'contacto' %}" class="btn btn--primary">Cotizar mi evento</a>
+            </div>
+        </section>
+
+
+        <section class="location">
+            <div class="location__content">
+                <h2 class="location__title">Encuéntranos</h2>
+                <p class="location__desc">
+                    Hotel Quinta Dalam se encuentra en el corazón de Coeneo, Michoacán. Un lugar perfecto para desconectarte de la rutina y sumergirte en la magia y tradición de nuestro estado.
+                </p>
+                <ul class="location__list">
+                    <li><strong>Dirección:</strong> Centro Histórico, Coeneo, Michoacán.</li>
+                    <li><strong>Teléfono:</strong> +52 123 456 7890</li>
+                    <li><strong>Correo:</strong> reservaciones@quintadalam.com</li>
+                </ul>
+                <a href="{% url 'contacto' %}" class="btn btn--primary location__btn">Ver cómo llegar</a>
+            </div>
+            <div class="location__map">
+                <iframe 
+                    class="location__iframe"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15024.4371661608!2d-101.5982845!3d19.8166667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842db23719b48c67%3A0xe581177607a9768a!2sCoeneo%2C%20Mich.!5e0!3m2!1ses-419!2smx!4v1711200000000!5m2!1ses-419!2smx" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__contact">
+            <h3 class="footer__title">Quinta Dalam</h3>
+            <p>Coeneo, Michoacán, México</p>
+        </div>
+
+        <div class="footer__badges">
+            <a href="https://validator.w3.org" target="_blank" rel="noopener noreferrer">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBnPZLFcdaKr65eQ-bYB7ypcNq6OvsYK2HrA&s" alt="Valid HTML5" class="footer__badge-img">
+            </a>
+            <a href="https://jigsaw.w3.org/css-validator/check/referer" target="_blank" rel="noopener noreferrer">
+                <img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="¡CSS Válido!" class="footer__badge-img">
+            </a>
+        </div>
+
+        <p class="footer__copy">
+            &copy; 2026 Hotel Quinta Dalam. Todos los derechos reservados.<br>
+            <a href="{% url 'panel_admin' %}" class="footer__admin-link">Acceso Administración</a>
+        </p>
+    </footer>
+
+    <script>
+        function formatearFechaLocal(fecha){
+
+            const year = fecha.getFullYear();
+
+            const month = String(
+                fecha.getMonth() + 1
+            ).padStart(2, '0');
+
+            const day = String(
+                fecha.getDate()
+            ).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+        $(document).ready(function() {
+            const track = $('#roomTrack');
+            
+            $('.carousel__btn--next').click(function() {
+                let scrollAmount = $('.room-card').outerWidth(true); 
+                track.animate({ scrollLeft: '+=' + scrollAmount }, 400);
+            });
+
+            $('.carousel__btn--prev').click(function() {
+                let scrollAmount = $('.room-card').outerWidth(true);
+                track.animate({ scrollLeft: '-=' + scrollAmount }, 400);
+            });
+
+            $('#btnReservaEfecto').click(function() {
+                // 1. Accedemos a la instancia de Flatpickr para obtener objetos de fecha reales
+                const fp = document.querySelector("#dateRange")._flatpickr;
+                const selectedDates = fp.selectedDates;
+                const guests = $('#guests').val();
+                const dateValue = $('#dateRange').val();
+
+                // 2. Validamos que haya seleccionado Entrada y Salida
+                if (selectedDates.length < 2) {
+                    alert("Por favor, selecciona un rango de fechas completo (Entrada y Salida).");
+                    return;
+                }
+
+                // 3. Calcular noches usando milisegundos (objetos Date puros de Flatpickr)
+                const d1 = selectedDates[0];
+                const d2 = selectedDates[1];
+                const diff = Math.abs(d2 - d1);
+                const nights = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+                // 4. Separar los strings para la URL basándonos en tu separador especial
+                const separador = "  ➔  ";
+                const partes = dateValue.split(separador);
+
+                const fechaEntrada = new Date(partes[0].trim());
+                const fechaSalida = new Date(partes[1].trim());
+
+                const checkin = formatearFechaLocal(
+                    fechaEntrada
+                );
+
+                const checkout = formatearFechaLocal(
+                    fechaSalida
+                );
+
+                // 5. Redirigir a la nueva página (codificando los strings para evitar errores)
+                window.location.href = `{% url 'reservar' %}?in=${encodeURIComponent(checkin)}&out=${encodeURIComponent(checkout)}&n=${nights}&g=${guests}`;
+            });
+
+            flatpickr("#dateRange", {
+                mode: "range",
+                minDate: "today",
+                dateFormat: "j M Y",
+                showMonths: 2,
+
+                // Forzamos el separador dentro de locale
+                locale: {
+                    ...flatpickr.l10ns.es,
+                    firstDayOfWeek: 1,
+                    rangeSeparator: "  ➔  ", 
+                },
+                // Añadimos una clase para poder darle el "paneo" en CSS
+                onReady: function(selectedDates, dateStr, instance) {
+                    $(instance.calendarContainer).addClass('quinta-calendar-style');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

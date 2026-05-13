@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto | Quinta Dalam</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+     <!--<link rel="stylesheet" href="css/forms.css">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dianacamposrosas/Proyecto-Hotel@main/css/forms.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <header class="header header--internal">
+        <div class="header__logo">
+            <a href="{% url 'home' %}" style="color: white; font-family: var(--font-heading); font-size: 1.8rem;">Quinta Dalam</a>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li><a href="{% url 'home' %}" class="header__nav-link">Inicio</a></li> 
+                <li><a href="{% url 'mision' %}"  class="header__nav-link">Misión</a></li>
+                <li><a href="{% url 'vision' %}" class="header__nav-link">Visión</a></li>
+                <li><a href="{% url 'catalogo' %}" class="header__nav-link">Catálogo</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="contact-layout">
+        
+        <div class="contact-info">
+            <h2 class="page-title" style="text-align: left; font-size: 2rem;">Ponte en contacto</h2>
+            <p style="color: var(--color-text-muted);">¿Tienes dudas sobre tu reservación en Quinta Dalam, o quieres hacer una? Escríbenos y te responderemos lo más pronto posible.</p>
+            
+            <ul class="contact-info__list">
+                <li><strong>Dirección:</strong> Coeneo, Michoacán.</li>
+                <li><strong>Teléfono:</strong> +52 123 456 7890</li>
+                <li><strong>Correo:</strong> reservaciones@quintadalam.com</li>
+            </ul>
+
+            <div class="accordion">
+                <div class="accordion__item">
+                    <button class="accordion__header">¿Llegas desde el Aeropuerto?</button>
+                    <div class="accordion__content">
+                        <p>El Aeropuerto Internacional de Morelia se encuentra a 2 horas y 15 minutos en auto de Coeneo. Ofrecemos servicio de transporte privado.</p>
+                    </div>
+                </div>
+                <div class="accordion__item">
+                    <button class="accordion__header">¿Llegas en Autobús?</button>
+                    <div class="accordion__content">
+                        <p>La terminal más cercana está a 15 minutos. Puedes tomar un taxi seguro directo al hotel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <form id="formularioContacto" class="form" action="#" method="post">
+                {% csrf_token %}
+                <h2 class="form__title page-title" style="font-size: 1.8rem;">Envíanos un Mensaje</h2>
+                
+                <div class="form__group">
+                    <label for="nombre" class="form__label">Nombre Completo:</label>
+                    <input type="text" id="nombre" name="nombre" class="form__input" placeholder="Ej. Dostin Hurtado">
+                    <div id="msg-nombre" class="form__feedback"></div>
+                </div>
+                
+                <div class="form__group">
+                    <label for="correo" class="form__label">Correo Electrónico:</label>
+                    <input type="email" id="correo" name="correo" class="form__input" placeholder="ejemplo@correo.com">
+                    <div id="msg-correo" class="form__feedback"></div>
+                </div>
+
+                <div class="form__group">
+                    <label for="asunto" class="form__label">Motivo:</label>
+                    <select id="asunto" name="asunto" class="form__select">
+                        <option value="reservacion">Hacer una reservación</option>
+                        <option value="duda">Información general</option>
+                    </select>
+                </div>
+
+                <div class="form__group">
+                    <label for="mensaje" class="form__label">Tu Mensaje:</label>
+                    <textarea id="mensaje" name="mensaje" class="form__textarea" placeholder="Escribe aquí tus dudas..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                    <button type="submit" class="btn btn--primary" style="flex: 1;">Enviar</button>
+                    <button type="reset" class="btn" style="flex: 1; background: #eee; color: #333;">Borrar</button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer__contact">
+            <h3 class="footer__title">Quinta Dalam</h3>
+            <p>Coeneo, Michoacán, México</p>
+        </div>
+
+        <div class="footer__badges">
+            <a href="https://validator.w3.org" target="_blank" rel="noopener noreferrer">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBnPZLFcdaKr65eQ-bYB7ypcNq6OvsYK2HrA&s" alt="Valid HTML5" class="footer__badge-img">
+            </a>
+            <a href="https://jigsaw.w3.org/css-validator/check/referer" target="_blank" rel="noopener noreferrer">
+                <img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="¡CSS Válido!" class="footer__badge-img">
+            </a>
+        </div>
+
+        <p class="footer__copy">
+            &copy; 2026 Hotel Quinta Dalam. Todos los derechos reservados.
+        </p>
+    </footer>
+
+    <script>
+        function getCookie(name) {
+
+            let cookieValue = null;
+
+            if (document.cookie && document.cookie !== '') {
+
+                const cookies = document.cookie.split(';');
+
+                for (let i = 0; i < cookies.length; i++) {
+
+                    const cookie = cookies[i].trim();
+
+                    if (
+                        cookie.substring(0, name.length + 1)
+                        === (name + '=')
+                    ) {
+
+                        cookieValue = decodeURIComponent(
+                            cookie.substring(name.length + 1)
+                        );
+
+                        break;
+                    }
+                }
+            }
+
+            return cookieValue;
+        }
+        $(document).ready(function() {
+            // Acordeón
+            $('.accordion__header').click(function() {
+                let contenido = $(this).next('.accordion__content');
+                if (contenido.css('max-height') !== '0px') {
+                    contenido.css('max-height', '0px');
+                } else {
+                    contenido.css('max-height', contenido.prop('scrollHeight') + "px");
+                } 
+            });
+
+            // Validación en tiempo real
+            $('#nombre').on('input', function() {
+                let valor = $(this).val().trim();
+                if(valor.length >= 4) {
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                    $('#msg-nombre').removeClass('form__feedback--error').addClass('form__feedback--success').text('¡Excelente!').slideDown('fast');
+                } else {
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                    $('#msg-nombre').removeClass('form__feedback--success').addClass('form__feedback--error').text('El nombre debe tener al menos 4 caracteres.').slideDown('fast');
+                }
+            });
+
+            $('#correo').on('input', function() {
+                let regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+                let valor = $(this).val().trim();
+                if(regexCorreo.test(valor)) {
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                    $('#msg-correo').removeClass('form__feedback--error').addClass('form__feedback--success').text('¡Correo válido!').slideDown('fast');
+                } else {
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                    $('#msg-correo').removeClass('form__feedback--success').addClass('form__feedback--error').text('Ingresa un correo real.').slideDown('fast');
+                }
+            });
+            
+            $('#formularioContacto').submit(function(e) {
+                
+
+                e.preventDefault();
+
+                if (
+                    $('.is-invalid').length > 0 ||
+                    $('#nombre').val().trim() === '' ||
+                    $('#correo').val().trim() === ''
+                ) {
+
+                    Swal.fire({
+
+                        icon: 'warning',
+
+                        title: 'Campos incompletos',
+
+                        text: 'Por favor, corrige los campos marcados antes de enviar.',
+
+                        confirmButtonColor: '#2e4029'
+
+                    });
+
+                    return;
+                }
+
+                const formData = new FormData(this);
+
+                fetch('/contacto/', {
+
+                    method: 'POST',
+
+                    body: formData,
+
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+
+                })
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    Swal.fire({
+
+                        icon: 'success',
+
+                        title: '¡Mensaje enviado!',
+
+                        text: 'Hemos recibido tu consulta, ¡Te Responderemos Muy Pronto.',
+
+                        confirmButtonColor: '#2e4029'
+
+                    });
+
+                    $('#formularioContacto')[0].reset();
+
+                    $('.form__feedback').hide();
+
+                    $('input, textarea').removeClass(
+                        'is-valid is-invalid'
+                    );
+
+                })
+
+                .catch(error => {
+
+                    Swal.fire({
+
+                        icon: 'error',
+
+                        title: 'Error',
+
+                        text: 'No se pudo enviar el mensaje 😔',
+
+                        confirmButtonColor: '#2e4029'
+
+                    });
+
+                });
+
+            });
+        });
+    </script>
+</body>
+</html>

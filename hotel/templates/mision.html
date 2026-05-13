@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión | Quinta Dalam</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"">
+</head>
+<body>
+
+    <header class="header header--internal">
+        <div class="header__logo">
+            <a href="{% url 'home' %}" style="color: white; font-family: var(--font-heading); font-size: 1.8rem;">Quinta Dalam</a>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li><a href="{% url 'home' %}"  class="header__nav-link">Inicio</a></li>
+                <li><a href="{% url 'vision' %}" class="header__nav-link">Visión</a></li>
+                <li><a href="{% url 'catalogo' %}" class="header__nav-link">Catálogo</a></li>
+                <li><a href="{% url 'contacto' %}" class="header__nav-link">Contacto</a></li> 
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <h2 class="page-title">Nuestra Misión</h2>
+        <hr class="page-divider">
+        
+        <p style="font-size: 1.1em; color: var(--color-text-main); font-weight: 600;">La misión principal de Hotel Quinta Dalam es preservar y difundir la riqueza cultural de Michoacán a través de un espacio de hospedaje que rinda homenaje a sus municipios y tradiciones.</p>
+        <p>De acuerdo con la historia del lugar, su razón de ser se basa en tres pilares fundamentales:</p>
+        
+        <ul style="margin-left: 20px; margin-top: 20px; color: var(--color-text-muted);">
+            <li style="margin-bottom: 15px;"><strong>Legado Familiar:</strong> El proyecto nació de un sueño familiar que sobrevivió a la pérdida de seres queridos. Su misión es honrar ese esfuerzo compartido y convertir el dolor en un símbolo de resiliencia.</li>
+            <li style="margin-bottom: 15px;"><strong>Representación Cultural:</strong> El objetivo es que cada rincón cuente una historia. Cada habitación está dedicada a un municipio, plasmando la esencia de la región.</li>
+            <li><strong>Impulso al Turismo Rural:</strong> Busca posicionar a Coeneo como un destino turístico relevante, mostrando al mundo este paraíso michoacano.</li>
+        </ul>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__contact">
+            <h3 class="footer__title">Quinta Dalam</h3>
+            <p>Coeneo, Michoacán, México</p>
+        </div>
+
+        <div class="footer__badges">
+            <a href="https://validator.w3.org" target="_blank" rel="noopener noreferrer">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBnPZLFcdaKr65eQ-bYB7ypcNq6OvsYK2HrA&s" alt="Valid HTML5" class="footer__badge-img">
+            </a>
+            <a href="https://jigsaw.w3.org/css-validator/check/referer" target="_blank" rel="noopener noreferrer">
+                <img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="¡CSS Válido!" class="footer__badge-img">
+            </a>
+        </div>
+
+        <p class="footer__copy">
+            &copy; 2026 Hotel Quinta Dalam. Todos los derechos reservados.
+        </p>
+    </footer>
+</body>
+</html>

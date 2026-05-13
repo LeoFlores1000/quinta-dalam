@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quinta Dalam{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dianacamposrosas/Proyecto-Hotel@main/css/forms.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Tema oscuro o rústico si prefieres, pero lo estilizaremos con tu CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script> <!-- Para que esté en español -->
+</head>
+<body>
+
+    <header class="header">
+        <div class="header__logo">
+            <span>Quinta Dalam</span>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li><a href="{% url 'mision' %}"  class="header__nav-link">Misión</a></li>
+                <li><a href="{% url 'vision' %}" class="header__nav-link">Visión</a></li>
+                <li><a href="{% url 'catalogo' %}" class="header__nav-link">Catálogo</a></li>
+                <li><a href="{% url 'contacto' %}" class="header__nav-link">Contacto</a></li> 
+            </ul>
+        </nav>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="footer">
+        <div class="footer__contact">
+            <h3 class="footer__title">Quinta Dalam</h3>
+            <p>Coeneo, Michoacán, México</p>
+        </div>
+
+        <div class="footer__badges">
+            <a href="https://validator.w3.org" target="_blank" rel="noopener noreferrer">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBnPZLFcdaKr65eQ-bYB7ypcNq6OvsYK2HrA&s" alt="Valid HTML5" class="footer__badge-img">
+            </a>
+            <a href="https://jigsaw.w3.org/css-validator/check/referer" target="_blank" rel="noopener noreferrer">
+                <img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="¡CSS Válido!" class="footer__badge-img">
+            </a>
+        </div>
+
+        <p class="footer__copy">
+            &copy; 2026 Hotel Quinta Dalam. Todos los derechos reservados.<br>
+            <a href="admin.html" class="footer__admin-link">Acceso Administración</a>
+        </p>
+    </footer>
+</body>
+</html>

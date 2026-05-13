@@ -1,0 +1,305 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login Admin | Quinta Dalam</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        :root {
+
+            --oro: #d4af37;
+
+            --oscuro: #1a2418;
+
+            --claro: #fdfaf0;
+
+            --gris: #f4f5f7;
+
+        }
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            background:
+                linear-gradient(
+                    rgba(0,0,0,0.45),
+                    rgba(0,0,0,0.45)
+                ),
+
+                url('https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1600&auto=format&fit=crop')
+                center/cover;
+        }
+
+        .login-card {
+
+            width: 100%;
+
+            max-width: 420px;
+
+            background: rgba(255,255,255,0.96);
+
+            backdrop-filter: blur(10px);
+
+            padding: 40px;
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.25);
+        }
+
+        .login-logo {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+        .login-logo i {
+
+            font-size: 3rem;
+
+            color: var(--oro);
+
+            margin-bottom: 10px;
+        }
+
+        .login-logo h1 {
+
+            color: var(--oscuro);
+
+            font-size: 2rem;
+
+            font-weight: 800;
+        }
+
+        .login-logo p {
+
+            color: #666;
+
+            margin-top: 5px;
+        }
+
+        .form-group {
+
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: var(--oscuro);
+
+            font-weight: 600;
+        }
+
+        .form-control {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            border: 1px solid #ddd;
+
+            outline: none;
+
+            transition: 0.25s;
+        }
+
+        .form-control:focus {
+
+            border-color: var(--oro);
+
+            box-shadow:
+                0 0 0 4px rgba(212,175,55,0.15);
+        }
+
+        .btn-login {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background: var(--oscuro);
+
+            color: var(--oro);
+
+            font-size: 1rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .btn-login:hover {
+
+            transform: translateY(-2px);
+
+            background: #24311f;
+        }
+
+        .back-home {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            text-decoration: none;
+
+            color: var(--oscuro);
+
+            font-size: 0.9rem;
+
+            transition: 0.25s;
+        }
+
+        .back-home:hover {
+
+            color: var(--oro);
+        }
+
+        .error-msg {
+
+            background: #ffe5e5;
+
+            color: #c62828;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            text-align: center;
+
+            font-size: 0.9rem;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="login-card">
+
+        <div class="login-logo">
+
+            <i class="fa-solid fa-hotel"></i>
+
+            <h1>Quinta Dalam</h1>
+
+            <p>Panel Administrativo</p>
+
+        </div>
+
+        {% if form.errors %}
+
+            <div class="error-msg">
+
+                Usuario o contraseña incorrectos 😔
+
+            </div>
+
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label>
+
+                    <i class="fa-solid fa-user"></i>
+
+                    Usuario
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    placeholder="Ingresa tu usuario"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    Contraseña
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    class="form-control"
+                    placeholder="••••••••"
+                    required>
+
+            </div>
+
+            <button type="submit" class="btn-login">
+
+                Entrar al Panel
+
+            </button>
+
+        </form>
+
+        <a href="{% url 'home' %}" class="back-home">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Volver al sitio
+
+        </a>
+
+    </div>
+
+</body>
+</html>

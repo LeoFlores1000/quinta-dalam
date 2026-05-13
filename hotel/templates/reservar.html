@@ -1,0 +1,876 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reservar | Quinta Dalam</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10ns/es.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="booking-page">
+
+    <!-- HEADER ORIGINAL -->
+    <header class="header header--internal"
+        style="position: sticky; top: 0; background-color: var(--color-primary-dark); padding: 0; flex-direction: column;">
+
+        <!-- BLOQUE 1: Identidad y Navegación (Renglón superior) -->
+        <div class="header__top"
+            style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div class="header__logo">
+                <a href="{% url 'home' %}" style="color: white; font-family: var(--font-heading); font-size: 1.8rem;">Quinta
+                    Dalam</a>
+            </div>
+            <nav class="header__nav">
+                <ul class="header__nav-list" style="list-style: none; display: flex; gap: 30px; margin: 0;">
+                    <li><a href="{% url 'home' %}" class="header__nav-link">Inicio</a></li>
+                    <li><a href="{% url 'catalogo' %}" class="header__nav-link">Catálogo</a></li>
+                    <li><a href="{% url 'contacto' %}" class="header__nav-link">Contacto</a></li> 
+                </ul>
+            </nav>
+        </div>
+
+        <!-- BLOQUE 2: Barra de Reserva (Siguiente renglón) -->
+        <div class="header__booking-row" style="padding: 20px 5%; display: flex; justify-content: center; width: 100%;">
+            <div class="booking-edit-pill">
+                <div class="edit-field">
+                    <span class="edit-label">Estancia</span>
+                    <div class="input-with-icon" style="position: relative; display: flex; align-items: center;">
+                        <i class="fa-regular fa-calendar-days" style="position: absolute; left: 10px; color: #d4af37;"></i>
+                        <input type="text" id="dateRange" class="edit-input" placeholder="Selecciona fechas" readonly style="padding-left: 35px;">
+                    </div>
+                </div>
+
+                <div class="edit-field">
+                    <span class="edit-label">Huéspedes</span>
+                    <select id="guests" class="edit-select">
+                        <option value="1">1 Huésped</option>
+                        <option value="2">2 Huéspedes</option>
+                        <option value="3">3 Huéspedes</option>
+                        <option value="4">4+ Familia</option>
+                    </select>
+                </div>
+
+                <div class="edit-field no-border">
+                    <span class="edit-label">Noches</span>
+                    <div id="labelNoches" class="edit-nights">0</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="booking-main">
+        <div class="booking-grid">
+            <!-- Columna Habitaciones -->
+            <section class="booking-list">
+                <h2 class="results-title">Habitaciones Disponibles</h2>
+                <div id="habitacionesResultados" class="catalog-list">
+                    <!-- Aquí inyectaremos las tarjetas con estilo catalog-item -->
+                </div>
+            </section>
+
+            <!-- Columna Ticket (Estilo Quinta) -->
+            <aside class="booking-aside">
+                <div class="booking-ticket">
+                    <h3>Tu Estancia</h3>
+                    <div class="ticket-content" id="ticketSummary">
+                        <p class="ticket-empty">Selecciona una habitación para ver el resumen.</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- FOOTER ORIGINAL -->
+    <footer class="footer">
+        <div class="footer__contact">
+            <h3 class="footer__title">Quinta Dalam</h3>
+            <p>Coeneo, Michoacán, México</p>
+        </div>
+        <div class="footer__badges">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBnPZLFcdaKr65eQ-bYB7ypcNq6OvsYK2HrA&s"
+                alt="HTML5" class="footer__badge-img">
+            <img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="CSS" class="footer__badge-img">
+        </div>
+        <p class="footer__copy">
+            &copy; 2026 Hotel Quinta Dalam. <a href="{% url 'panel_admin' %}" class="footer__admin-link">Acceso Administración</a>
+        </p>
+    </footer>
+
+    <script>
+        function formatearFechaLocal(fecha){
+
+            const year = fecha.getFullYear();
+
+            const month = String(
+                fecha.getMonth() + 1
+            ).padStart(2, '0');
+
+            const day = String(
+                fecha.getDate()
+            ).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        $(document).ready(function () {
+            window.reservaActual = {};
+            let habitaciones = [
+
+                {% for habitacion in habitaciones %}
+
+                {
+                    id: {{ habitacion.id }},
+
+                    nombre: "{{ habitacion.nombre|escapejs }}",
+
+                    tag: "{{ habitacion.get_tag_display|escapejs }}",
+
+                    precio: {{ habitacion.precio }},
+
+                    imagen: "{{ habitacion.primera_imagen|escapejs }}",
+
+                    descripcion: "{{ habitacion.descripcion|escapejs }}",
+
+                    amenities: [
+
+                        {% for amenity in habitacion.amenities_lista %}
+
+                            "{{ amenity|escapejs }}"{% if not forloop.last %},{% endif %}
+
+                        {% endfor %}
+
+                    ]
+                }
+
+                {% if not forloop.last %},{% endif %}
+
+                {% endfor %}
+
+            ];
+
+            if(habitaciones.length === 0){
+
+                $('#habitacionesResultados').html(`
+                    <div style="
+                        background: white;
+                        padding: 50px;
+                        border-radius: 20px;
+                        text-align: center;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+                    ">
+                        <h2 style="
+                            color: var(--color-primary);
+                            margin-bottom: 15px;
+                            font-family: var(--font-heading);
+                        ">
+                            Lo sentimos...
+                        </h2>
+
+                        <p style="color:#666; font-size:1.1rem;">
+                            No hay habitaciones disponibles
+                            para las fechas seleccionadas.
+                        </p>
+                    </div>
+                `);
+            }
+            const miSeparador = "  ➔  ";
+
+            // 1. Inicializar Flatpickr con el formato exacto
+            const fp = flatpickr("#dateRange", {
+
+                mode: "range",
+
+                minDate: "today",
+
+                dateFormat: "j M Y", // Formato visual bonito
+
+                locale: {
+                    ...flatpickr.l10ns.es,
+                    rangeSeparator: miSeparador
+                },
+
+                onChange: function (selectedDates) {
+
+                    if (selectedDates.length === 2) {
+
+                        // =========================
+                        // CALCULAR NOCHES
+                        // =========================
+
+                        const diff = Math.abs(
+                            selectedDates[1] - selectedDates[0]
+                        );
+
+                        const nights = Math.ceil(
+                            diff / (1000 * 60 * 60 * 24)
+                        );
+
+                        // Actualizar número de noches
+                        $('#labelNoches').text(nights);
+
+                        // =========================
+                        // FORMATO BACKEND
+                        // =========================
+
+                        
+                        const checkin = formatearFechaLocal(
+                            selectedDates[0]
+                        );
+
+                        const checkout = formatearFechaLocal(
+                            selectedDates[1]
+                        );
+
+                        // =========================
+                        // BUSCAR DISPONIBILIDAD REAL
+                        // =========================
+
+                        fetch(`/buscar-habitaciones/?check_in=${checkin}&check_out=${checkout}`)
+
+                            .then(response => response.json())
+
+                            .then(data => {
+
+                                // Actualizamos arreglo global
+                                habitaciones = data;
+
+                                // Re-renderizamos cards
+                                renderizarHabitaciones(nights);
+
+                                // Limpiar ticket
+                                $('#ticketSummary').html(`
+                                    <p class="ticket-empty">
+                                        Selecciona una habitación 
+                                        para ver el resumen actualizado.
+                                    </p>
+                                `);
+
+                                // =========================
+                                // SI NO HAY DISPONIBLES
+                                // =========================
+
+                                if(habitaciones.length === 0){
+
+                                    $('#habitacionesResultados').html(`
+
+                                        <div style="
+                                            background: white;
+                                            padding: 50px;
+                                            border-radius: 20px;
+                                            text-align: center;
+                                            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+                                        ">
+
+                                            <h2 style="
+                                                color: var(--color-primary);
+                                                margin-bottom: 15px;
+                                                font-family: var(--font-heading);
+                                            ">
+                                                Lo sentimos 😔
+                                            </h2>
+
+                                            <p style="
+                                                color:#666;
+                                                font-size:1.1rem;
+                                            ">
+                                                No hay habitaciones disponibles
+                                                para las fechas seleccionadas.
+                                            </p>
+
+                                        </div>
+
+                                    `);
+                                }
+
+                            });
+
+                    }
+
+                }
+
+            });
+
+            function renderizarHabitaciones(noches = 1) {
+                const grid = $('#habitacionesResultados');
+                grid.hide().empty(); // Efecto de carga simple
+
+                habitaciones.forEach(hab => {
+                    const subtotal = hab.precio * noches;
+                    const iva = subtotal * 0.16;
+                    const total = subtotal + iva;
+
+                    const amenitiesHTML = hab.amenities.map(a => `<li>${a}</li>`).join('');
+
+                    const card = `
+                        <article class="catalog-item">
+                            <div class="catalog-item__img-wrapper">
+                                <img src="${hab.imagen}" alt="${hab.nombre}" class="catalog-item__img">
+                            </div>
+                            <div class="catalog-item__content">
+                                <span class="catalog-item__tag">${hab.tag}</span>
+                                <h3 class="catalog-item__title">${hab.nombre}</h3>
+                                <p class="catalog-item__price">$${hab.precio.toLocaleString()} MXN / Noche</p>
+                                <p class="catalog-item__desc">${hab.descripcion}</p>
+                                <ul class="catalog-item__amenities">
+                                    ${amenitiesHTML}
+                                </ul>
+                                
+                                <div class="booking-price-box" style="margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.05); border: 1px dashed var(--color-accent); border-radius: 8px;">
+                                    <p style="margin:0; font-size: 0.85rem; color: #666;">Presupuesto para ${noches} noche(s):</p>
+                                    <p style="margin:5px 0; font-size: 1.4rem; color: var(--color-primary); font-weight: 700;">$${total.toLocaleString()} <small style="font-size: 0.7rem; color: #999;">(IVA inc.)</small></p>
+                                    <button class="btn btn--primary" style="width: 100%;" onclick="seleccionarParaTicket(${hab.id},'${hab.nombre}', ${hab.precio}, ${noches})">
+                                        Seleccionar habitación
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                    grid.append(card);
+                });
+                grid.fadeIn(500);
+            }
+
+
+            // 2. Leer parámetros de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkin = urlParams.get('in');
+            const checkout = urlParams.get('out');
+
+            if (checkin && checkout) {
+                // PASO CLAVE: Convertimos las fechas a objetos reales de JavaScript
+                // Esto hace que Flatpickr ignore si el mes venía en inglés o español
+                const [y1, m1, d1] = checkin.split('-');
+                const [y2, m2, d2] = checkout.split('-');
+
+                const dateIn = new Date(y1, m1 - 1, d1);
+                const dateOut = new Date(y2, m2 - 1, d2);
+
+                if (!isNaN(dateIn) && !isNaN(dateOut)) {
+                    // Seteamos las fechas internamente
+                    fp.setDate([dateIn, dateOut]);
+
+                    // Forzamos el texto en el input usando el formato del calendario actual
+                    // Esto "traduce" automáticamente cualquier mes que venga del index
+                    const textIn = fp.formatDate(dateIn, "j M Y");
+                    const textOut = fp.formatDate(dateOut, "j M Y");
+                    $('#dateRange').val(textIn + miSeparador + textOut);
+
+                    // SOLUCIÓN BUG (No calcula las noches si reservo desde el catálogo): Calculamos las noches inmediatamente al cargar la página
+                    const diff = Math.abs(dateOut - dateIn);
+                    const nights = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                    
+                    // Aseguramos que sea al menos 1 noche, y lo pintamos en el círculo de arriba
+                    $('#labelNoches').text(nights > 0 ? nights : 1);
+                    
+                } else {
+                    // Si por alguna razón lo de arriba falla, el plan B (tu código original)
+                    fp.setDate([checkin, checkout]);
+                    $('#dateRange').val(checkin + miSeparador + checkout);
+                }
+            }
+
+            if (urlParams.get('n')) $('#labelNoches').text(urlParams.get('n'));
+            if (urlParams.get('g')) $('#guests').val(urlParams.get('g'));
+
+            const nochesActuales = parseInt($('#labelNoches').text()) || 1;
+            renderizarHabitaciones(nochesActuales);
+            $('#guests').on('change', function () {
+                const nochesActuales = parseInt($('#labelNoches').text()) || 1;
+                renderizarHabitaciones(nochesActuales);
+                // Limpiamos ticket porque cambió la configuración de la búsqueda
+                $('#ticketSummary').html('<p class="ticket-empty">Selecciona una habitación para ver el resumen actualizado.</p>');
+            });
+        });
+
+        function seleccionarParaTicket(id,nombre, precioNoche, noches) {
+            // Obtenemos las fechas directamente del input de Flatpickr
+            const fechas = $('#dateRange').val();
+            const huespedes = $('#guests').val();
+
+            reservaActual = {
+                id,
+                nombre,
+                precioNoche,
+                noches,
+                fechas,
+                huespedes
+            };
+
+            const subtotal = precioNoche * noches;
+            const iva = subtotal * 0.16;
+            const total = subtotal + iva;
+
+            const ticketHTML = `
+                <div style="animation: fadeIn 0.4s ease-in-out;">
+                    <h4 style="color: var(--color-primary); margin-bottom: 15px; border-bottom: 1px solid var(--color-accent); padding-bottom: 10px; font-family: var(--font-heading);">Resumen de Selección</h4>
+                    
+                    <p style="margin: 5px 0; font-size: 1.1rem;"><strong>${nombre}</strong></p>
+                    
+                    <!-- Detalles de Estancia -->
+                    <div style="margin: 15px 0; font-size: 0.9rem; color: #444; background: rgba(212, 175, 55, 0.1); padding: 10px; border-radius: 5px;">
+                        <p style="margin: 3px 0;">
+                            <i class="fa-regular fa-calendar-check" style="color: var(--color-primary); width: 20px;"></i> 
+                            ${fechas}
+                        </p>
+                        <p style="margin: 3px 0;">
+                            <i class="fa-solid fa-moon" style="color: #5c6b73; width: 20px;"></i> 
+                            ${noches} noche(s) seleccionadas
+                        </p>
+                    </div>
+
+                    <p style="margin: 5px 0; font-size: 0.85rem; color: #666;">Precio base: $${precioNoche.toLocaleString()} x noche</p>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                            <span>Subtotal:</span> 
+                            <span>$${subtotal.toLocaleString()}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                            <span>IVA (16%):</span> 
+                            <span>$${iva.toLocaleString()}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 15px; border-top: 2px solid #ddd; padding-top: 15px; font-size: 1.3rem; color: var(--color-primary); font-weight: 800;">
+                            <span>TOTAL:</span> 
+                            <span>$${total.toLocaleString()}</span>
+                        </div>
+                        <small style="display:block; text-align:right; color: #999; font-size: 0.7rem;">Moneda: MXN</small>
+                    </div>
+
+                    <!-- BOTÓN INTELIGENTE: Mantiene tu estilo pero con ID para controlarlo -->
+                    <button id="main-booking-btn" class="btn" style="width: 100%; margin-top: 20px; background: #d4af37; color: #1a2418; font-weight: 800; padding: 15px; border-radius: 8px; cursor: pointer; border: none; transition: 0.3s;" 
+                        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"
+                        onclick="mostrarFormularioHuesped()">
+                        CONFIRMAR RESERVACIÓN
+                    </button>
+                    
+                    <p style="text-align: center; font-size: 0.75rem; color: #999; margin-top: 15px;">
+                        <i class="fas fa-lock"></i> Pago seguro y garantizado
+                    </p>
+                </div>
+            `;
+            
+            $('#ticketSummary').hide().html(ticketHTML).fadeIn(300);
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        function mostrarFormularioHuesped() {
+            $('#main-title').text('Información del Huésped');
+            $('#progress-fill').css('width', '66.66%');
+            $('#lbl-step-2').addClass('active');
+
+            $('#main-booking-btn')
+                .text('CONTINUAR AL PAGO')
+                .attr('onclick', 'mostrarPago()')
+                .css('background', '#d4af37');
+
+            const formHTML = `
+                <div class="checkout-card" style="max-width: 100%;">
+                    <div style="display:flex; align-items:center; margin-bottom:25px;">
+                        <button class="btn-back" onclick="location.reload()" style="border:1px solid #ddd; border-radius:50%; width:35px; height:35px; cursor:pointer; margin-right:15px; transition:0.3s;"><i class="fas fa-arrow-left"></i></button>
+                        <h3 style="margin:0; font-family: var(--font-heading);">Detalles de contacto</h3>
+                    </div>
+                    
+                    <form id="guestForm" class="form-grid">
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-user"></i>
+                                Nombre(s) *
+                            </label>
+
+                            <input 
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                placeholder="Ej. Juan Manuel"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-user-tag"></i>
+                                Apellidos *
+                            </label>
+
+                            <input 
+                                type="text"
+                                id="apellidos"
+                                name="apellidos"
+                                placeholder="Ej. Pérez García"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-envelope"></i>
+                                Correo Electrónico *
+                            </label>
+
+                            <input 
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="juan@ejemplo.com"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-phone"></i>
+                                WhatsApp / Celular *
+                            </label>
+
+                            <input 
+                                type="tel"
+                                id="telefono"
+                                name="telefono"
+                                placeholder="10 dígitos con lada"
+                                minlength="10"
+                                pattern="[0-9]{10}"
+                                required>
+                                
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-suitcase"></i>
+                                Motivo del viaje
+                            </label>
+
+                            <select id="motivo" name="motivo">
+
+                                <option>Placer / Vacaciones</option>
+
+                                <option>Negocios</option>
+
+                                <option>Aniversario / Boda</option>
+
+                                <option>Otro</option>
+
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-clock"></i>
+                                Hora estimada de llegada
+                            </label>
+
+                            <select id="horaLlegada" name="horaLlegada">
+
+                                <option>15:00 - 17:00</option>
+
+                                <option>17:00 - 19:00</option>
+
+                                <option>19:00 - 21:00</option>
+
+                                <option>Después de las 21:00</option>
+
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+
+                            <label>
+                                <i class="fas fa-comment-dots"></i>
+                                ¿Alguna petición especial?
+                            </label>
+
+                            <textarea
+                                id="peticiones"
+                                name="peticiones"
+                                rows="2"
+                                placeholder="Ej. Alergias, cama extra, decoración especial..."></textarea>
+
+                        </div>
+
+                    </form>
+                </div>
+                ${generarSeccionInfoPropiedad()}
+            `;
+            $('#habitacionesResultados').fadeOut(300, function() { $(this).html(formHTML).fadeIn(400); });
+        }
+
+        function mostrarPago() {
+            if(
+                !$('#nombre').val().trim() ||
+                !$('#apellidos').val().trim() ||
+                !$('#email').val().trim() ||
+                !$('#telefono').val().trim()
+            ){
+
+                Swal.fire({
+
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Completa todos los campos obligatorios',
+                    confirmButtonColor: '#2e4029'
+
+                });
+
+                return;
+            }
+
+            reservaActual.nombre = $('#nombre').val().trim();
+
+            reservaActual.apellidos = $('#apellidos').val().trim();
+
+            reservaActual.email = $('#email').val().trim();
+
+            reservaActual.telefono = $('#telefono').val().trim();
+
+            reservaActual.motivo = $('#motivo').val();
+
+            reservaActual.horaLlegada = $('#horaLlegada').val();
+
+            reservaActual.peticiones = $('#peticiones').val();
+
+            $('#main-title').text('Método de Pago');
+            $('#progress-fill').css('width', '100%');
+            $('#lbl-step-3').addClass('active');
+            
+            $('#main-booking-btn').text('PAGAR Y FINALIZAR').attr('onclick', 'confirmarFinal()');
+
+            const pagoHTML = `
+                <div class="checkout-card">
+                    <div style="display:flex; align-items:center; margin-bottom:25px;">
+                        <button class="btn-back" onclick="mostrarFormularioHuesped()" style="border:1px solid #ddd; border-radius:50%; width:35px; height:35px; cursor:pointer; margin-right:15px;"><i class="fas fa-arrow-left"></i></button>
+                        <h3 style="margin:0; font-family: var(--font-heading);">Pago Seguro</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.9rem; color: #666;">Tarjetas aceptadas:</span>
+                        <div style="font-size: 1.5rem; color: #2c3e50; display: flex; gap: 10px;">
+                            <i class="fab fa-cc-visa"></i>
+                            <i class="fab fa-cc-mastercard"></i>
+                            <i class="fab fa-cc-amex"></i>
+                        </div>
+                    </div>
+
+                    <form class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Nombre en la tarjeta</label>
+                            <input type="text" placeholder="Como aparece en la tarjeta">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Número de Tarjeta</label>
+                            <div style="position:relative;">
+                                <input type="text" placeholder="0000 0000 0000 0000" style="padding-right:40px;">
+                                <i class="fas fa-lock" style="position:absolute; right:15px; top:15px; color:#ccc;"></i>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Expiración</label><input type="text" placeholder="MM/AA"></div>
+                        <div class="form-group"><label>CVC <i class="fas fa-question-circle" title="3 números al reverso"></i></label><input type="password" placeholder="123"></div>
+                        
+                        <div class="form-group full-width" style="flex-direction:row; gap:10px; align-items:center; margin-top:10px;">
+                            <input type="checkbox" id="factura" style="width:auto;">
+                            <label for="factura" style="margin:0;">Requiero factura fiscal (CFDI)</label>
+                        </div>
+                    </form>
+                </div>
+                ${generarSeccionInfoPropiedad()}
+            `;
+            $('#habitacionesResultados').fadeOut(300, function() { $(this).html(pagoHTML).fadeIn(400); });
+        }
+
+        function confirmarFinal() {
+
+            const fechas = $('#dateRange').val().split('➔');
+
+            const checkin = formatearFechaLocal(
+                new Date(fechas[0].trim())
+            );
+
+            const checkout = formatearFechaLocal(
+                new Date(fechas[1].trim())
+            );
+
+            const payload = {
+
+                habitacion_id: reservaActual.id,
+
+                check_in: checkin,
+
+                check_out: checkout,
+
+                huespedes: reservaActual.huespedes,
+
+                nombre: reservaActual.nombre,
+
+                apellidos: reservaActual.apellidos,
+
+                email: reservaActual.email,
+
+                telefono: reservaActual.telefono,
+
+                motivo: reservaActual.motivo,
+
+                hora_llegada: reservaActual.horaLlegada,
+
+                peticiones: reservaActual.peticiones
+
+            };
+
+            fetch('/crear-reservacion/', {
+
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify(payload)
+
+            })
+
+            .then(async response => {
+
+                const data = await response.json();
+
+                if(!response.ok){
+
+                    throw new Error(
+                        data.error || 'Error inesperado'
+                    );
+                }
+
+                return data;
+            })
+
+            .then(data => {
+
+                const btn = document.getElementById(
+                    'main-booking-btn'
+                );
+
+                animarPajaritos(btn);
+
+                $(btn)
+                    .text('¡RESERVACIÓN CONFIRMADA!')
+                    .prop('disabled', true);
+
+                setTimeout(() => {
+
+                    Swal.fire({
+
+                        icon: 'success',
+
+                        title: '¡Reservación confirmada!',
+
+                        text: '¡Te hemos enviado un correo de Confirmación!',
+
+                        confirmButtonColor: '#2e4029'
+
+                    }).then(() => {
+
+                        window.location.href = "/";
+
+                    });
+
+                }, 2200);
+
+            })
+
+            .catch(error => {
+
+                Swal.fire({
+
+                    icon: 'error',
+
+                    title: 'Error',
+
+                    text: error.message,
+
+                    confirmButtonColor: '#2e4029'
+
+                });
+
+            });
+
+        }
+        function generarSeccionInfoPropiedad() {
+            return `
+                <!-- SECCIÓN DE INFORMACIÓN Y SERVICIOS -->
+                <div style="margin-top: 25px; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+                    <h3 style="font-family: var(--font-heading); color: var(--color-primary); margin-bottom: 15px;">Información de la Propiedad</h3>
+                    <p style="font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 25px;">
+                        <strong>Quinta Dalam</strong> es un refugio ancestral ubicado en el corazón de Coeneo. Nuestra arquitectura orgánica se funde con la naturaleza michoacana, ofreciendo un santuario de paz. Cada habitación ha sido diseñada por artesanos locales, utilizando materiales sostenibles y detalles de lujo que celebran nuestra cultura.
+                    </p>
+
+                    <h4 style="margin-bottom: 20px; font-size: 1.1rem; color: #333; display: flex; align-items: center;">
+                        <i class="fas fa-concierge-bell" style="margin-right: 10px; color: #d4af37;"></i> Servicios incluidos
+                    </h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9rem; color: #555;">
+                        <div style="display:flex; align-items:center;"><i class="fas fa-coffee" style="color:#d4af37; width:25px;"></i> Desayuno artesanal diario</div>
+                        <div style="display:flex; align-items:center;"><i class="fas fa-spa" style="color:#d4af37; width:25px;"></i> Acceso a zona de meditación</div>
+                        <div style="display:flex; align-items:center;"><i class="fas fa-parking" style="color:#d4af37; width:25px;"></i> Valet parking privado</div>
+                        <div style="display:flex; align-items:center;"><i class="fas fa-tint" style="color:#d4af37; width:25px;"></i> Amenidades orgánicas de la región</div>
+                        <div style="display:flex; align-items:center;"><i class="fas fa-fire-alt" style="color:#d4af37; width:25px;"></i> Fogata nocturna en el jardín</div>
+                        <div style="display:flex; align-items:center;"><i class="fas fa-shuttle-van" style="color:#d4af37; width:25px;"></i> Transporte al centro histórico</div>
+                    </div>
+
+                    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div>
+                            <h4 style="color: var(--color-primary); margin-bottom: 15px;">Políticas de Estancia</h4>
+                            <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: #666; line-height: 1.8;">
+                                <li><i class="fas fa-check" style="color:#d4af37;"></i> Cancelación gratuita hasta 48 hrs antes.</li>
+                                <li><i class="fas fa-check" style="color:#d4af37;"></i> Ambiente 100% familiar y de descanso.</li>
+                                <li><i class="fas fa-check" style="color:#d4af37;"></i> No se permite el uso de bocinas en áreas comunes.</li>
+                            </ul>
+                        </div>
+                        <div style="background: #fff9ea; padding: 15px; border-radius: 10px; border: 1px solid #f7e8c3;">
+                            <h4 style="color: #856404; margin-bottom: 10px; font-size: 0.9rem;"><i class="fas fa-shield-alt"></i> Garantía Quinta Dalam</h4>
+                            <p style="font-size: 0.8rem; color: #856404; margin: 0;">Tu reservación incluye seguro de viajero básico y protección de datos bancarios mediante cifrado SSL de 256 bits.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        function animarPajaritos(elemento) {
+            const rect = elemento.getBoundingClientRect();
+            
+            // Calculamos el centro exacto del botón respecto a la ventana del navegador
+            const xCentro = rect.left + (rect.width / 2);
+            const yCentro = rect.top + (rect.height / 2);
+
+            for (let i = 0; i < 15; i++) { // Subimos a 15 pajaritos para que se vea más lleno
+                const bird = document.createElement('i');
+                bird.className = 'fas fa-dove bird-particle';
+                
+                // Posición inicial: el centro del botón
+                bird.style.left = xCentro + 'px';
+                bird.style.top = yCentro + 'px';
+
+                // Trayectorias más abiertas y dinámicas
+                const xDestino = (Math.random() - 0.5) * 600; // Se dispersan más ancho
+                const yDestino = -(Math.random() * 400 + 150); // Vuelan más alto
+                const rotacion = (Math.random() - 0.5) * 120; // Rotan más
+
+                bird.style.setProperty('--x', `${xDestino}px`);
+                bird.style.setProperty('--y', `${yDestino}px`);
+                bird.style.setProperty('--r', `${rotacion}deg`);
+
+                document.body.appendChild(bird);
+
+                // Limpiar
+                setTimeout(() => bird.remove(), 2300);
+            }
+        }
+    </script>
+</body>
+
+</html>

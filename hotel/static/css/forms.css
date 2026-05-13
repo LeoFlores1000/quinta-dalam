@@ -1,0 +1,120 @@
+/*
+   FORMS.CSS MEJORADO (Premium + Validación para el usod e jquery)
+*/
+
+/* Contenedor principal del formulario */
+.form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px; /* Bordes bien redondeados y modernos */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Sombra elegante */
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #eaeaea;
+}
+
+/* Grupo de cada campo (label + input) */
+.form__group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* Etiquetas */
+.form__label {
+    display: block;
+    font-weight: 600;
+    color: #2e4029; /* Verde bosque */
+    margin-bottom: 8px;
+    font-size: 0.90em;
+    text-transform: uppercase; /* Toque premium */
+    letter-spacing: 0.5px;
+}
+
+/* --- NOVEDAD: Contenedores para Íconos Embebidos --- */
+.form__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form__input-icon {
+    position: absolute;
+    left: 15px;
+    color: #d4af37; /* Dorado */
+    font-size: 1.1rem;
+    pointer-events: none; /* Evita que el ícono estorbe al dar clic */
+    transition: color 0.3s ease;
+}
+
+/* Cajas de texto y menús desplegables */
+.form__input, 
+.form__select, 
+.form__textarea {
+    width: 100%;
+    padding: 14px 15px; /* Padding por defecto */
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: #333333;
+    background-color: #fafafa;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); /* Profundidad suave */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Inteligencia CSS: Solo da espacio a la izquierda si está dentro de un wrapper de ícono */
+.form__input-wrapper > .form__input,
+.form__input-wrapper > .form__select {
+    padding-left: 45px; 
+}
+
+/* Efecto cuando haces clic (Focus) */
+.form__input:focus, 
+.form__select:focus, 
+.form__textarea:focus {
+    border-color: #d4af37 !important; /* Dorado elegante */
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); /* Resplandor dorado */
+}
+
+/* El ícono cambia a Verde Bosque al escribir */
+.form__input:focus + .form__input-icon,
+.form__select:focus + .form__input-icon {
+    color: #2e4029;
+}
+
+/* Área de texto */
+.form__textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* =========================================
+   VALIDACIÓN CON JQUERY
+========================================= */
+/* El !important defiende tus colores rojo/verde contra el dorado del focus */
+.is-valid { 
+    border-color: #28a745 !important; 
+    background-color: #f8fff9 !important; 
+    box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.15) !important; /* Resplandor Verde */
+}
+
+.is-invalid { 
+    border-color: #dc3545 !important; 
+    background-color: #fff8f8 !important; 
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.15) !important; /* Resplandor Rojo */
+}
+
+.form__feedback { 
+    font-size: 0.85rem; 
+    padding: 5px 10px; 
+    border-radius: 4px; 
+    color: white; 
+    display: none; 
+    margin-top: 5px; 
+    width: fit-content; 
+}
+
+.form__feedback--success { background-color: #28a745; }
+.form__feedback--error { background-color: #dc3545; }

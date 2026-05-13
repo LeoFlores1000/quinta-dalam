@@ -1,0 +1,1107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin | Quinta Dalam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* Variables basadas en su Documentación Técnica */
+        :root {
+            --oro-quinta: #d4af37;
+            --oscuro: #1a2418;
+            --fondo-suave: #fdfaf0;
+            --blanco: #ffffff;
+            --gris-claro: #f4f5f7;
+            --texto-muted: #666;
+            --exito: #28a745;
+            --alerta: #ffc107;
+            --peligro: #dc3545;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { background-color: var(--gris-claro); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar Lateral */
+        .sidebar {
+            width: 260px;
+            background-color: var(--oscuro);
+            color: var(--blanco);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .sidebar__logo { font-size: 1.5rem; font-weight: 800; color: var(--oro-quinta); margin-bottom: 40px; text-align: center; }
+        .sidebar__menu { list-style: none; flex: 1; }
+        .sidebar__item { margin-bottom: 15px; }
+        .sidebar__link { color: var(--blanco); text-decoration: none; display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 8px; transition: 0.3s; }
+        .sidebar__link:hover, .sidebar__link.active { background-color: var(--oro-quinta); color: var(--oscuro); font-weight: 600; }
+        .sidebar__footer { text-align: center; font-size: 0.8rem; color: #888; }
+
+        /* Contenido Principal */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        .header-dash { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-dash h2 { color: var(--oscuro); font-size: 1.8rem; }
+        .btn-regresar { background: var(--fondo-suave); border: 1px solid #ddd; padding: 10px 20px; border-radius: 8px; text-decoration: none; color: var(--oscuro); font-weight: 600; }
+
+        /* Tarjetas de Estadísticas (KPIs) */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .kpi-card { background: var(--blanco); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 20px; border-left: 5px solid var(--oro-quinta); }
+        .kpi-icon { font-size: 2.5rem; color: var(--oro-quinta); }
+        .kpi-info h4 { color: var(--texto-muted); font-size: 0.9rem; font-weight: 400; margin-bottom: 5px; }
+        .kpi-info span { font-size: 1.5rem; font-weight: 800; color: var(--oscuro); }
+
+        /* Gráficas y Layout */
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .panel { background: var(--blanco); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .panel-title { color: var(--oscuro); margin-bottom: 20px; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Estado de Habitaciones */
+        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; }
+        .room-box { padding: 15px; border-radius: 8px; text-align: center; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid #eee; }
+        .room-box:hover { transform: translateY(-3px); box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+        .status-libre { background-color: #b6fabc; color: var(--exito); border-color: var(--exito); }
+        .status-ocupada { background-color: #fabcc5; color: var(--peligro); border-color: var(--peligro); }
+        .status-limpieza { background-color: #faebbc; color: var(--alerta); border-color: var(--alerta); }
+
+        /* Tarjetas de Huéspedes */
+        .guest-list { display: flex; flex-direction: column; gap: 15px; }
+        .guest-card { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
+        .guest-avatar { width: 45px; height: 45px; background: var(--oro-quinta); color: var(--oscuro); border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 1.2rem; }
+        .guest-info h5 { color: var(--oscuro); margin-bottom: 3px; }
+        .guest-info p { font-size: 0.8rem; color: var(--texto-muted); }
+        .guest-action { margin-left: auto; color: var(--oro-quinta); cursor: pointer; }
+
+        /* Formularios CRUD Integrados */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; color: var(--oscuro); }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
+        .form-control:focus { border-color: var(--oro-quinta); }
+        .btn-submit { background: var(--oscuro); color: var(--oro-quinta); border: none; padding: 12px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-submit:hover { background: var(--oro-quinta); color: var(--oscuro); }
+
+        @media (max-width: 900px) {
+            .dashboard-grid, .form-grid { grid-template-columns: 1fr; }
+            .sidebar { display: none; } /* Ocultar sidebar en móviles por ahora */
+        }
+        .status-libre {
+
+            background: linear-gradient(
+                145deg,
+                #198754,
+                #157347
+            );
+
+            color: white;
+
+            border: none;
+
+            box-shadow:
+                0 8px 20px rgba(25,135,84,0.35);
+        }
+
+        .status-ocupada {
+
+            background: linear-gradient(
+                145deg,
+                #dc3545,
+                #b02a37
+            );
+
+            color: white;
+
+            border: none;
+
+            box-shadow:
+                0 8px 20px rgba(220,53,69,0.35);
+        }
+
+        .status-limpieza {
+
+            background: linear-gradient(
+                145deg,
+                #ffc107,
+                #d39e00
+            );
+
+            color: #1a2418;
+
+            border: none;
+
+            box-shadow:
+                0 8px 20px rgba(255,193,7,0.35);
+        }
+        .room-box {
+
+            padding: 18px;
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.25s ease;
+
+            min-height: 120px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            position: relative;
+
+            overflow: hidden;
+
+            font-size: 0.95rem;
+        }
+
+        .room-box small {
+
+            opacity: 0.85;
+
+            margin-top: 6px;
+
+            font-size: 0.8rem;
+        }
+
+        .room-box:hover {
+
+            transform:
+                translateY(-5px)
+                scale(1.03);
+
+            filter: brightness(1.08);
+        }
+        .sidebar__logo {
+
+    text-decoration: none;
+
+    color: var(--oro-quinta);
+
+    display: block;
+}
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="{% url 'home' %}" class="sidebar__logo">
+
+    <i class="fa-solid fa-hotel"></i>
+
+    Quinta Dalam
+
+</a>
+        <ul class="sidebar__menu">
+            <li class="sidebar__item"><a href="#" class="sidebar__link active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li class="sidebar__item"><a href="#habitaciones" class="sidebar__link"><i class="fa-solid fa-bed"></i> Habitaciones</a></li>
+            <li class="sidebar__item"><a href="#huespedes" class="sidebar__link"><i class="fa-solid fa-users"></i> Huéspedes</a></li>
+            <li class="sidebar__item"><a href="#crud" class="sidebar__link"><i class="fa-solid fa-database"></i> Gestión (CRUD)</a></li>
+        </ul>
+        <div class="sidebar__footer">
+            Admin Panel v2.0
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="header-dash">
+            <div>
+                <h2>Bienvenido, Administrador</h2>
+                <p style="color: var(--texto-muted);">Resumen de operaciones de hoy.</p>
+            </div>
+            <a href="{% url 'home' %}" class="btn-regresar"><i class="fa-solid fa-arrow-left"></i> Volver a la Web</a>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <i class="fa-solid fa-wallet kpi-icon"></i>
+                <div class="kpi-info"><h4>Ingresos del Mes</h4><span>${{ ingresos }} MXN</span></div>
+            </div>
+            <div class="kpi-card">
+                <i class="fa-solid fa-key kpi-icon"></i>
+                <div class="kpi-info"><h4>Ocupación Actual</h4><span>{{ ocupacion }}%</span></div>
+            </div>
+            <div class="kpi-card">
+                <i class="fa-solid fa-bell-concierge kpi-icon"></i>
+                <div class="kpi-info"><h4>Check-ins Hoy</h4><span>{{ checkins_hoy }}</span></div>
+            </div>
+            <div class="kpi-card">
+                <i class="fa-solid fa-broom kpi-icon"></i>
+                <div class="kpi-info"><h4>En Limpieza</h4><span>2</span></div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="panel">
+                <h3 class="panel-title">Ingresos Mensuales <i class="fa-solid fa-chart-line" style="color: var(--oro-quinta);"></i></h3>
+                <canvas id="ingresosChart" height="100"></canvas>
+            </div>
+
+            <div class="panel" id="huespedes">
+                <h3 class="panel-title">Huéspedes Recientes <button style="background:none;border:none;color:var(--oro-quinta);cursor:pointer;"><i class="fa-solid fa-plus"></i></button></h3>
+                <div class="guest-list">
+
+                    {% for reserva in reservaciones_recientes %}
+
+                        <div class="guest-card">
+
+                            <div class="guest-avatar">
+
+                                {{ reserva.nombre_cliente|first }}
+
+                            </div>
+
+                            <div class="guest-info">
+
+                                <h5>
+
+                                    {{ reserva.nombre_cliente }}
+
+                                </h5>
+
+                                <p>
+
+                                    {{ reserva.habitacion.nombre }}
+
+                                    •
+
+                                    Sale:
+                                    {{ reserva.check_out }}
+
+                                </p>
+
+                            </div>
+
+                            <i class="fa-solid fa-ellipsis-vertical guest-action"></i>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="panel" id="habitaciones">
+                <h3 class="panel-title">Estado de Habitaciones 
+                    <span style="font-size:0.8rem; font-weight:normal;">
+                        <i class="fa-solid fa-circle" style="color:var(--exito)"></i> Libre 
+                        <i class="fa-solid fa-circle" style="color:var(--peligro)"></i> Ocupada
+                    </span>
+                </h3>
+                <div class="rooms-grid">
+
+                    {% for item in habitaciones_estado %}
+
+                        <div class="room-box
+
+                            {% if item.estado == 'ocupada' %}
+                                status-ocupada
+                            {% elif item.estado == 'limpieza' %}
+                                status-limpieza
+                            {% else %}
+                                status-libre
+                            {% endif %}
+
+                        "
+
+                        data-estado="{{ item.estado }}"
+
+                        data-habitacion="{{ item.habitacion.nombre }}"
+                        data-id="{{ item.habitacion.id }}"
+
+                        {% if item.reserva %}
+
+                            data-huesped="{{ item.reserva.nombre_cliente }}"
+
+                            data-salida="{{ item.reserva.check_out }}"
+
+                            data-email="{{ item.reserva.email }}"
+
+                            data-telefono="{{ item.reserva.telefono }}"
+
+                            data-peticiones="{{ item.reserva.peticiones }}"
+
+                        {% endif %}
+                        >
+
+                            {{ item.habitacion.nombre }}
+
+                            <br>
+
+                            <small>
+
+                                #{{ item.habitacion.id }}
+
+                            </small>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+
+            <div class="panel" id="crud">
+                <h3 class="panel-title">Gestión Base de Datos</h3>
+                <form id="formAdmin">
+
+                    <div class="form-group">
+
+                        <label>Tipo de Registro:</label>
+
+                        <select id="tipoRegistro" class="form-control">
+
+                            <option value="habitacion">
+                                Habitación
+                            </option>
+
+                            <option value="reservacion">
+                                Reservación
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div id="dynamicFields"></div>
+
+                    <button type="submit" class="btn-submit">
+
+                        Guardar Registro
+
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function renderForm(tipo){
+
+            let html = '';
+
+            if(tipo === 'habitacion'){
+
+                html = `
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>Nombre</label>
+
+                            <input
+                                type="text"
+                                id="nombreHabitacion"
+                                class="form-control">
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label>Precio</label>
+
+                            <input
+                                type="number"
+                                id="precioHabitacion"
+                                class="form-control">
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label>Tipo Habitación</label>
+
+                            <select
+                                id="tagHabitacion"
+                                class="form-control">
+
+                                <option value="suite">
+                                    Suite Premium
+                                </option>
+
+                                <option value="presidencial">
+                                    Suite Presidencial
+                                </option>
+
+                                <option value="cabana">
+                                    Cabaña Ecológica
+                                </option>
+
+                                <option value="estandar">
+                                    Habitación Estándar
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Descripción</label>
+
+                        <textarea
+                            id="descripcionHabitacion"
+                            class="form-control"></textarea>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Amenidades</label>
+
+                        <input
+                            type="text"
+                            id="amenitiesHabitacion"
+                            class="form-control"
+                            placeholder="Wifi, TV, Jacuzzi">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Imágenes</label>
+
+                        <textarea
+                            id="imagenesHabitacion"
+                            class="form-control"
+                            placeholder="https://img1.jpg, https://img2.jpg"></textarea>
+
+                    </div>
+                `;
+            }
+
+            if(tipo === 'reservacion'){
+
+                html = `
+
+    <div class="form-group">
+
+        <label>Habitación</label>
+
+        <select
+            id="habitacionReserva"
+            class="form-control">
+
+            {% for item in habitaciones_estado %}
+
+                <option value="{{ item.habitacion.id }}">
+
+                    {{ item.habitacion.nombre }}
+
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Nombre</label>
+
+            <input
+                type="text"
+                id="nombreReserva"
+                class="form-control">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Apellidos</label>
+
+            <input
+                type="text"
+                id="apellidosReserva"
+                class="form-control">
+
+        </div>
+
+    </div>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="emailReserva"
+                class="form-control">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Teléfono</label>
+
+            <input
+                type="text"
+                id="telefonoReserva"
+                class="form-control">
+
+        </div>
+
+    </div>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Check In</label>
+
+            <input
+                type="date"
+                id="checkinReserva"
+                class="form-control">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Check Out</label>
+
+            <input
+                type="date"
+                id="checkoutReserva"
+                class="form-control">
+
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        <label>Huéspedes</label>
+
+        <input
+            type="number"
+            id="huespedesReserva"
+            class="form-control"
+            value="2">
+
+    </div>
+`;
+            }
+
+            $('#dynamicFields').html(html);
+        }
+        renderForm('habitacion');
+
+        $('#tipoRegistro').change(function(){
+
+            renderForm($(this).val());
+
+        });
+
+        $(document).ready(function() {
+            
+            // 1. Configuración de la Gráfica Mamalona (Chart.js)
+            const ctx = document.getElementById('ingresosChart').getContext('2d');
+            
+            // Gradiente para la gráfica
+            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(212, 175, 55, 0.5)'); // Dorado Quinta transparente
+            gradient.addColorStop(1, 'rgba(212, 175, 55, 0.0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Ingresos Totales (MXN)',
+                        data: [65000, 78000, 90000, 81000, 110000, 95000, 124500],
+                        borderColor: '#1a2418', // Oscuro
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#d4af37',
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.4 // Hace la línea curva y suave
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 2. Interactividad del CRUD con SweetAlert2
+            $('#formAdmin').submit(function(e){
+
+    e.preventDefault();
+
+    const tipo = $('#tipoRegistro').val();
+
+    if(tipo === 'reservacion'){
+
+    const payload = {
+
+        habitacion_id:
+            $('#habitacionReserva').val(),
+
+        nombre:
+            $('#nombreReserva').val(),
+
+        apellidos:
+            $('#apellidosReserva').val(),
+
+        email:
+            $('#emailReserva').val(),
+
+        telefono:
+            $('#telefonoReserva').val(),
+
+        check_in:
+            $('#checkinReserva').val(),
+
+        check_out:
+            $('#checkoutReserva').val(),
+
+        huespedes:
+            $('#huespedesReserva').val(),
+
+        motivo: 'Reservación Admin',
+
+        hora_llegada: '',
+
+        peticiones: ''
+
+    };
+
+    fetch('/crear-reservacion/', {
+
+        method: 'POST',
+
+        headers: {
+
+            'Content-Type': 'application/json'
+
+        },
+
+        body: JSON.stringify(payload)
+
+    })
+
+    .then(async response => {
+
+        const data = await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error || 'Error'
+            );
+        }
+
+        return data;
+    })
+
+    .then(data => {
+
+        Swal.fire({
+
+            icon: 'success',
+
+            title: 'Reservación creada 😭🔥',
+
+            confirmButtonColor: '#2e4029'
+
+        });
+
+        setTimeout(() => {
+
+            location.reload();
+
+        }, 1200);
+
+    })
+
+    .catch(error => {
+
+        Swal.fire({
+
+            icon: 'error',
+
+            title: error.message,
+
+            confirmButtonColor: '#dc3545'
+
+        });
+
+    });
+
+    return;
+}
+
+    const payload = {
+
+        nombre: $('#nombreHabitacion').val(),
+
+        precio: $('#precioHabitacion').val(),
+
+        tag: $('#tagHabitacion').val(),
+
+        descripcion: $('#descripcionHabitacion').val(),
+
+        amenities: $('#amenitiesHabitacion').val(),
+
+        imagenes: $('#imagenesHabitacion')
+            .val()
+            .split(',')
+            .map(img => img.trim())
+            .filter(img => img !== '')
+
+    };
+
+    fetch('/crear-habitacion/', {
+
+        method: 'POST',
+
+        headers: {
+
+            'Content-Type': 'application/json'
+
+        },
+
+        body: JSON.stringify(payload)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+    Swal.fire({
+
+        icon: 'success',
+
+        title: 'Habitación creada ',
+
+        text: 'Ya aparece en catálogo.',
+
+        confirmButtonColor: '#2e4029'
+
+    });
+
+    $('#formAdmin')[0].reset();
+
+    renderForm('habitacion');
+
+    setTimeout(() => {
+
+        location.reload();
+
+    }, 1200);
+
+})
+
+    .catch(error => {
+
+        Swal.fire({
+
+            icon: 'error',
+
+            title: 'Error '
+
+        });
+
+    });
+
+});
+
+            // 3. Efectos de las tarjetas de habitaciones
+        
+
+            $('.room-box').click(function(){
+
+                const estado = $(this).data('estado');
+
+                const habitacion = $(this).data('habitacion');
+
+                if(estado === 'libre'){
+
+                    Swal.fire({
+
+                        icon: 'success',
+
+                        title: habitacion,
+
+                        text: '✅ Disponible hoy',
+
+                        confirmButtonColor: '#2e4029',
+
+                        showCancelButton: true,
+
+                        confirmButtonText: 'Hacer Check-in',
+
+                        cancelButtonText: 'Cerrar'
+
+                    });
+
+                    return;
+                }
+
+                if(estado === 'limpieza'){
+
+                    Swal.fire({
+
+                        icon: 'warning',
+
+                        title: habitacion,
+
+                        text: '🧹 Habitación en limpieza',
+
+                        confirmButtonColor: '#d4af37',
+
+                        showCancelButton: true,
+
+                        confirmButtonText: 'Marcar disponible',
+
+                        cancelButtonText: 'Cerrar',
+
+                        preConfirm: () => {
+
+                            const habitacionId = $(this).data('id');
+
+                            return fetch('/cambiar-estado/', {
+
+                                method: 'POST',
+
+                                headers: {
+
+                                    'Content-Type': 'application/json'
+
+                                },
+
+                                body: JSON.stringify({
+
+                                    habitacion_id: habitacionId,
+
+                                    estado: 'libre'
+
+                                })
+
+                            })
+
+                            .then(response => response.json())
+
+                            .then(data => {
+
+                                location.reload();
+
+                            });
+
+                        }
+
+                    });
+
+                    return;
+                }
+
+                const huesped = $(this).data('huesped');
+
+                const salida = $(this).data('salida');
+
+                const email = $(this).data('email');
+
+                const telefono = $(this).data('telefono');
+
+                const peticiones = $(this).data('peticiones');
+
+                Swal.fire({
+
+                    title: habitacion,
+
+                    html: `
+
+                        <div style="margin-top:10px;">
+
+                            <table style="
+                                width:100%;
+                                border-collapse:separate;
+                                border-spacing:0 10px;
+                                text-align:left;
+                            ">
+
+                                <tr>
+                                    <td style="
+                                        font-weight:700;
+                                        color:#1a2418;
+                                        width:120px;
+                                    ">
+                                         Huésped
+                                    </td>
+
+                                    <td style="
+                                        background:#f8f9fa;
+                                        padding:12px;
+                                        border-radius:10px;
+                                    ">
+                                        ${huesped}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="
+                                        font-weight:700;
+                                        color:#1a2418;
+                                    ">
+                                         Salida
+                                    </td>
+
+                                    <td style="
+                                        background:#f8f9fa;
+                                        padding:12px;
+                                        border-radius:10px;
+                                    ">
+                                        ${salida}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="
+                                        font-weight:700;
+                                        color:#1a2418;
+                                    ">
+                                         Email
+                                    </td>
+
+                                    <td style="
+                                        background:#f8f9fa;
+                                        padding:12px;
+                                        border-radius:10px;
+                                    ">
+                                        ${email}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="
+                                        font-weight:700;
+                                        color:#1a2418;
+                                    ">
+                                         Teléfono
+                                    </td>
+
+                                    <td style="
+                                        background:#f8f9fa;
+                                        padding:12px;
+                                        border-radius:10px;
+                                    ">
+                                        ${telefono}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="
+                                        font-weight:700;
+                                        color:#1a2418;
+                                        vertical-align:top;
+                                    ">
+                                         Peticiones
+                                    </td>
+
+                                    <td style="
+                                        background:#f8f9fa;
+                                        padding:12px;
+                                        border-radius:10px;
+                                    ">
+                                        ${peticiones || 'Ninguna'}
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+                    `,
+
+                    icon: 'info',
+
+                    confirmButtonColor: '#2e4029',
+
+                    showCancelButton: true,
+
+                    confirmButtonText: 'Finalizar checkout',
+
+                    preConfirm: () => {
+
+                        const habitacionId = $(this).data('id');
+
+                        return fetch('/cambiar-estado/', {
+
+                            method: 'POST',
+
+                            headers: {
+
+                                'Content-Type': 'application/json'
+
+                            },
+
+                            body: JSON.stringify({
+
+                                habitacion_id: habitacionId,
+
+                                estado: 'libre'
+
+                            })
+
+                        })
+
+                        .then(response => response.json())
+
+                        .then(data => {
+
+                            location.reload();
+
+                        });
+
+                    },
+
+                    cancelButtonText: 'Cerrar'
+
+                });
+
+            });
+        });
+        
+    </script>
+</body>
+</html>
