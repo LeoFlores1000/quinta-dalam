@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Reservar | Quinta Dalam</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -457,11 +458,43 @@
                 </div>
             `;
             
-            $('#ticketSummary').hide().html(ticketHTML).fadeIn(300);
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            $('#ticketSummary')
+                .hide()
+                .html(ticketHTML)
+                .fadeIn(300);
+
+            if (window.innerWidth <= 768) {
+
+                // MÓVIL → baja al ticket
+
+                const ticket =
+                    document.querySelector('.booking-aside');
+
+                const offset = 40;
+
+                const top =
+                    ticket.getBoundingClientRect().top
+                    + window.pageYOffset
+                    - offset;
+
+                window.scrollTo({
+
+                    top: top,
+
+                    behavior: 'smooth'
+                });
+
+            } else {
+
+                // DESKTOP → arriba total
+
+                window.scrollTo({
+
+                    top: 0,
+
+                    behavior: 'smooth'
+                });
+            }
         }
         
         function mostrarFormularioHuesped() {
@@ -599,7 +632,36 @@
                 </div>
                 ${generarSeccionInfoPropiedad()}
             `;
-            $('#habitacionesResultados').fadeOut(300, function() { $(this).html(formHTML).fadeIn(400); });
+            $('#habitacionesResultados')
+    .fadeOut(300, function() {
+
+        $(this)
+            .html(formHTML)
+            .fadeIn(400);
+
+        // SCROLL AUTOMÁTICO EN TELÉFONO
+        if (window.innerWidth <= 768) {
+
+            setTimeout(() => {
+
+                const form =
+                    document.querySelector('.checkout-card');
+
+                const top =
+                    form.getBoundingClientRect().top
+                    + window.pageYOffset
+                    - 20;
+
+                window.scrollTo({
+
+                    top: top,
+
+                    behavior: 'smooth'
+                });
+
+            }, 250);
+        }
+    });
         }
 
         function mostrarPago() {
@@ -681,7 +743,36 @@
                 </div>
                 ${generarSeccionInfoPropiedad()}
             `;
-            $('#habitacionesResultados').fadeOut(300, function() { $(this).html(pagoHTML).fadeIn(400); });
+           $('#habitacionesResultados')
+    .fadeOut(300, function() {
+
+        $(this)
+            .html(pagoHTML)
+            .fadeIn(400);
+
+        // SCROLL AUTOMÁTICO EN TELÉFONO
+        if (window.innerWidth <= 768) {
+
+            setTimeout(() => {
+
+                const payment =
+                    document.querySelector('.checkout-card');
+
+                const top =
+                    payment.getBoundingClientRect().top
+                    + window.pageYOffset
+                    - 20;
+
+                window.scrollTo({
+
+                    top: top,
+
+                    behavior: 'smooth'
+                });
+
+            }, 250);
+        }
+    });
         }
 
         function confirmarFinal() {
